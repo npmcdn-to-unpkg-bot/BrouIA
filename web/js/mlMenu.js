@@ -83,7 +83,7 @@
             this.backCtrl = document.createElement('button');
             this.backCtrl.className = 'menu_back menu_back-hidden';
             this.backCtrl.setAttribute('aria-label', 'Go back');
-            this.backCtrl.innerHTML = '<span class="icon icon_arrow-left"></span>';
+            this.backCtrl.innerHTML = '<span class="icon icon-arrow-left"></span>';
             this.el.insertBefore(this.backCtrl, this.el.firstChild);
         }
 

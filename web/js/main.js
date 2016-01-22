@@ -1,5 +1,6 @@
 $(document).ready(function () {
 
+    $('.content').addClass('content-loading');
 
     $.ajax({
         url: "api/illes",
@@ -9,6 +10,7 @@ $(document).ready(function () {
             $.each(obj.illes, function (i, val) {
                 $("#submenu-islas").append('<li class="menu_item"><a class="menu_link" href="#">' + val.nom_illa + '</a></li>');
             });
+            $('.content').removeClass('content-loading');
         },
         error: function (e) {
             alert("error: " + e.statusText);
@@ -24,8 +26,8 @@ $(document).ready(function () {
             onItemClick: loadData
         });
 
-        $('.action_open').click(openMenu);
-        $('.action_close').click(closeMenu);
+        $('.action-open').click(openMenu);
+        $('.action-close').click(closeMenu);
 
         function openMenu() {
             $('#menu').addClass('menu_open');
@@ -36,6 +38,8 @@ $(document).ready(function () {
 
         function loadData(ev, itemName) {
             $('.info')[0].innerHTML = itemName;
+            
+            closeMenu();
         }
     });
 });

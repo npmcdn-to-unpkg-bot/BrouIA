@@ -24,7 +24,7 @@
             <header class="header">
                 <div class="logo">
                     <div class="logo-image">
-                        
+                        <h1 class="logo-text">LOGO img</h1>
                     </div>
                     <h2 class="logo-text">ADI</h2>
                 </div>

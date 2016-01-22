@@ -19,6 +19,6 @@ $(document).ready(function () {
     }
 
     function loadData(ev, itemName) {
-
+        alert(itemName);
     }
 });

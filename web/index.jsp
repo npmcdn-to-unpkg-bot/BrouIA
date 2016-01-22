@@ -31,50 +31,27 @@
             </header>
             
             <button class="action action_open" aria-label="Open Menu">
-                <span class="icon incon_menu"></span>
+                <span class="icon icon_menu"></span>
             </button>
             
             <nav id="menu" class="menu">
                 
                 <button class="action action_close" aria-label="Close Menu">
-                    <span class="icon icon_cros"></span>
+                    <span class="icon icon_cross"></span>
                 </button>
                 
                 <div class="menu_wrap">
                     
                     <ul data-menu="main" class="menu_level">
                         <li class="menu_item">
-                            <a data-submenu="submenu-penes" class="menu_link" href="#">Penes</a>
+                            <a data-submenu="submenu-islas" class="menu_link" href="#">Islas</a>
+                        </li>
+                        <li class="menu_item">
+                            <a  class="menu_link" href="#">fsdafsdasdfa</a>
                         </li>
                     </ul>
                     
-                    <!-- submenu penes -->
-                    <ul data-menu="submenu-penes" class="menu_level">
-                        <li class="menu_item">
-                            <a class="menu_link" href="#">Goma</a>
-                        </li>
-                        <li class="menu_item">
-                            <a class="menu_link" href="#">Silicona</a>
-                        </li>
-                        <li class="menu_item">
-                            <a class="menu_link" href="#">Acero</a>
-                        </li>
-                        <li class="menu_item">
-                            <a data-submenu="submenu-animales" class="menu_link" href="#">Animales</a>
-                        </li>
-                    </ul>
-                    
-                    <!-- submenu animales -->
-                    <ul data-menu="submenu-animales" class="menu_level">
-                        <li class="menu_item">
-                            <a class="menu_link" href="#">Humano</a>
-                        </li>
-                        <li class="menu_item">
-                            <a class="menu_link" href="#">Caballo</a>
-                        </li>
-                        <li class="menu_item">
-                            <a class="menu_link" href="#">Micro</a>
-                        </li>
+                    <ul id="submenu-islas" data-menu="submenu-islas" class="menu_level">
                     </ul>
                     
                 </div>

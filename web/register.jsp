@@ -1,14 +1,27 @@
 <%@include file="_header.jsp" %>  
 <%@include file="_nav.jsp" %>  
 
-<%
-String nombre = request.getParameter("nombre");
-String password = request.getParameter("pass1");
-String password2 = request.getParameter("pass2");
+<%    String nombre = request.getParameter("nombre");
+    String password = request.getParameter("pass1");
+    String password2 = request.getParameter("pass2");
 
-if (password.equals(password2)) {
-    //store user
-}
+    if (nombre != null && password != null && password2 != null) {
+        if (password.equals(password2)) {
+            //store user
+            boolean isOk = actions.createUser(nombre, password);
+            if (isOk) {
+                session.setAttribute("user", nombre);
+                session.setAttribute("pass", password);
+                session.setAttribute("level", "1");
+                
+                response.setStatus(response.SC_MOVED_TEMPORARILY);
+                response.setHeader("Location", request.getContextPath() + "/index.jsp");
+            } else {
+                // msg de que alguna cosa ha fallat
+            }
+        }
+
+    }
 %>
 
 <section class="content">

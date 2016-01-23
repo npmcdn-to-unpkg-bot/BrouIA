@@ -10,6 +10,16 @@
 
         <ul id="submenu-islas" data-menu="submenu-islas" class="menu_level">
         </ul>
+        <div class="menu_bottom">
+            <hr/>
+            
+            <ul class="menu_level-personal">
+                <li class="menu_item">
+                    <a  class="menu_link" href="#"><span class="icon icon-speech-bubble"></span>  Messages</a>
+                </li>
+            </ul>
+        </div>
     </div>
+
 
 </nav>

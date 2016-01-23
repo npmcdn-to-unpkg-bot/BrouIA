@@ -25,4 +25,31 @@ public class DBActions {
         }
         return res;
     }
+    
+    
+    
+    
+    public void installOrResetAll() {
+        DBConnection con = new DBConnection();
+        
+        try {
+            con.open();
+            Statement st = con.getConection().createStatement();
+            
+            //users
+            boolean dropOk = st.execute("drop table if exists users;");
+            boolean createOk = st.execute("create table `users` ( "
+                    + "name varchar(100) primary key, "
+                    + "u_time int(10), "
+                    + "hashed_pass varchar(128)"
+                    + ");");
+            
+        } catch (Exception ex) {
+            
+        } finally {
+            con.close();
+        }
+    }
+    
+    
 }

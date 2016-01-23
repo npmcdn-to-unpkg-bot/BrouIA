@@ -6,6 +6,7 @@ $(document).ready(function () {
         url: "api/illes",
         type: 'GET',
         success: function (resp, status) {
+            console.log(resp);
             var obj = eval("(" + resp + ")");
             $.each(obj.illes, function (i, val) {
                 $("#submenu-islas").append('<li class="menu_item"><a class="menu_link" href="#">' + val.nom_illa + '</a></li>');
@@ -18,6 +19,7 @@ $(document).ready(function () {
         }
     }).then(function () {
 
+//animació del menu
         var mlMenu = new MLMenu(document.getElementById('menu'), {
             breadcrumbsCtrl: true, // show breadcrumbs
             initialBreadcrumb: 'all', // initial breadcrumb text

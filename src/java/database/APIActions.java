@@ -22,6 +22,8 @@ public class APIActions {
             ResultSet rs = st.executeQuery("select isla from sm_procesados group by isla");
             
             StringBuilder builder = new StringBuilder();
+            
+            //generam es JSON
             builder.append("{\"illes\":[");
             while (rs.next()) {
                 builder.append("{\"nom_illa\":\"");

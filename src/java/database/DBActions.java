@@ -27,7 +27,30 @@ public class DBActions {
     }
     
     
-    
+    public boolean installIsNeed() {
+        DBConnection con = new DBConnection();
+        
+        try {
+            con.open();
+            Statement st = con.getConection().createStatement();
+            
+            ResultSet rs = st.executeQuery("select count(*) as count from information_schema.tables where"
+                    + " table_name = 'users' and table_schema = 'adiiu'");
+            
+            if (rs.next()) {
+                int num = rs.getInt("count");
+                
+                return num <= 0;
+            }
+            
+        } catch (Exception ex) {
+            
+        } finally {
+            con.close();
+        }
+        
+        return true;
+    }
     
     public void installOrResetAll() {
         DBConnection con = new DBConnection();
@@ -43,13 +66,56 @@ public class DBActions {
                     + "u_time int(10), "
                     + "hashed_pass varchar(128)"
                     + ");");
-            
         } catch (Exception ex) {
-            
         } finally {
             con.close();
         }
     }
     
+    public boolean createUser(String userName, String password) {
+        long unixTime = System.currentTimeMillis() / 1000L;
+        
+        DBConnection con = new DBConnection();
+        
+        try {
+            con.open();
+            Statement st = con.getConection().createStatement();
+            st.execute("insert into users values ('"
+                    + userName + "',"
+                    + unixTime + ","
+                    + "sha2(concat('" + unixTime + "', '" + password + "'), 512))");
+            return true;
+        } catch (Exception ex) {
+        } finally {
+            con.close();
+        }
+        return false;
+    }
+    
+    public boolean logInUser(String userName, String password) {
+        long unixTime = System.currentTimeMillis() / 1000L;
+        
+        DBConnection con = new DBConnection();
+        
+        try {
+            con.open();
+            Statement st = con.getConection().createStatement();
+            String query = "select count(*) as count form users where "
+                    + "name = " + userName + " and "
+                    + "hashed_pass = sha2(concat(u_time, '" + password + "'), 512);";
+            ResultSet rs = st.executeQuery("insert into users values ('"
+                    + userName + "',"
+                    + unixTime + ","
+                    + "sha2(concat('" + unixTime + "', '" + password + "'), 512))");
+            
+            if (rs.next()) {
+                return 1 == rs.getInt("count");
+            }
+        } catch (Exception ex) {
+        } finally {
+            con.close();
+        }
+        return false;
+    }
     
 }

@@ -6,10 +6,22 @@ $(document).ready(function () {
         url: "api/illes",
         type: 'GET',
         success: function (resp, status) {
-            console.log(resp);
             var obj = eval("(" + resp + ")");
+            
+            $("#menus ul.main-menu_level").append("<li class='menu_item'><a data-submenu='submenu-islas' class='menu_link' href='#'>Islas</a></li>")
+            $("#menus").append("<ul id='submenu-islas' data-menu='submenu-islas' class='menu_level'></ul>");
+            
             $.each(obj.illes, function (i, val) {
-                $("#submenu-islas").append('<li class="menu_item"><a class="menu_link" href="#">' + val.nom_illa + '</a></li>');
+                var subMenuId = "submenu-islas-" + val.nom_illa.trim();
+                $("#submenu-islas").append('<li class="menu_item"><a data-submenu="' + subMenuId + '" class="menu_link" href="#">' + val.nom_illa + '</a></li>');
+                //var ulIlla = $("<ul id=" + subMenuId + "' data-menu='" + subMenuId + "' class='menu_level'><li class='menu_item'><a class='menu_link' href='#'>ALL</a></li></ul>");
+                var ulIlla = $("<ul id=" + subMenuId + "' data-menu='" + subMenuId + "' class='menu_level'><li class='menu_item'><a class='menu_link' href='#'>ALL</a></li></ul>");
+                $.each(val.municipis, function(i2, val2){
+                    console.log(ulIlla);
+                    $('<li class="menu_item"><a class="menu_link" href="#">' + val2.nom_municipi + '</a></li>').appendTo(ulIlla);
+                });
+                
+                ulIlla.appendTo("#menus");
             });
             $('.content').removeClass('content-loading');
         },

@@ -72,20 +72,6 @@ a:hover {
     speak: none;
 }
 
-.menu_bottom {
-    position: absolute;
-    bottom: 2.5em;
-    height: 3em;
-    width: 100%;
-    background: #1c1d22;
-}
-.menu_bottom hr {
-    margin: 0px auto;
-    width: 90%;
-    height: 1px;
-    border: none;
-    border-top: 1px solid #47484c;
-}
 .menu {
     position: fixed;
     top: 120px;
@@ -109,7 +95,7 @@ a:hover {
     overflow: hidden;
     overflow-y: scroll;
     width: calc(100% + 50px);
-    height: calc(100% - 3em);/*menu bottom*/
+    height: 100%;
     margin: 0;
     padding: 0;
     list-style-type: none;

@@ -7,6 +7,4 @@
             <ul data-menu="main" class="menu_level main-menu_level"></ul>
         </div>
     </div>
-
-
 </nav>

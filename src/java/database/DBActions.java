@@ -36,7 +36,7 @@ public class DBActions {
             Statement st = con.getConection().createStatement();
 
             ResultSet rs = st.executeQuery("select count(*) as count from information_schema.tables where"
-                    + "( table_name = 'users' or table_name= 'messages') and table_schema = 'adiiu'");
+                    + "(table_name = 'users' or table_name= 'messages') and table_schema = 'adiiu'");
 
             if (rs.next()) {
                 int num = rs.getInt("count");
@@ -68,14 +68,31 @@ public class DBActions {
                     + "hashed_pass varchar(128)"
                     + ");");
 
+            //messages
             st.execute("drop table if exists messages;");
             st.execute("create table `messages` ( "
-                    + "id byte(16) primary key,"
+                    + "id binary(16) primary key, "
                     + "name_emisor varchar(100), "
                     + "name_receptor varchar(100), "
                     + "message varchar(10000), "
                     + "u_time int(10) "
                     + ");");
+            
+            //dies
+            st.execute("drop table if exists diesAmbPes;");
+            st.execute("create table `diesAmbPes` ("
+                    + "dia varchar(10), "
+                    + "pes int"
+                    + ");");
+            st.execute("insert into diesAmbPes values "
+                    + "('Lunes', 1), "
+                    + "('Martes', 2), "
+                    + "('Miercoles', 3), "
+                    + "('Jueves', 4), "
+                    + "('Viernes', 5), "
+                    + "('Sabado', 6), "
+                    + "('Domingo', 7)"
+                    + ";");
         } catch (Exception ex) {
         } finally {
             con.close();

@@ -27,7 +27,6 @@
 <%
     DBActions actions = new DBActions();
     actions.installOrResetAll();
-    Thread.sleep(9000);
     response.setStatus(response.SC_MOVED_TEMPORARILY);
     response.setHeader("Location", request.getContextPath() + "/index.jsp");
 

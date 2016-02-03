@@ -1,7 +1,12 @@
 package database;
 
 import Models.Missatge;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -35,13 +40,17 @@ public class DBActions {
             con.open();
             Statement st = con.getConection().createStatement();
 
-            ResultSet rs = st.executeQuery("select count(*) as count from information_schema.tables where"
-                    + "(table_name = 'users' or table_name= 'messages') and table_schema = 'adiiu'");
+            ResultSet rs = st.executeQuery("select count(*) as count "
+                    + "from information_schema.tables "
+                    + "where "
+                    + "(table_schema = 'adiiu' and table_name = 'messages') or "
+                    + "(table_schema = 'adiiu' and table_name = 'users')  or "
+                    + "(table_schema = 'adiiu' and table_name = 'diesAmbPes');");
 
             if (rs.next()) {
                 int num = rs.getInt("count");
 
-                return num <= 0;
+                return num != 3;
             }
 
         } catch (Exception ex) {
@@ -58,96 +67,29 @@ public class DBActions {
 
         try {
             con.open();
-            Statement st = con.getConection().createStatement();
-
-            //users
-            st.execute("drop table if exists users;");
-            st.execute("create table `users` ( "
-                    + "name varchar(100) primary key, "
-                    + "u_time int(10), "
-                    + "hashed_pass varchar(128)"
-                    + ");");
-
-            //messages
-            st.execute("drop table if exists messages;");
-            st.execute("create table `messages` ( "
-                    + "id binary(16) primary key, "
-                    + "name_emisor varchar(100), "
-                    + "name_receptor varchar(100), "
-                    + "message varchar(10000), "
-                    + "u_time int(10) "
-                    + ");");
-            
-            //dies
-            st.execute("drop table if exists diesAmbPes;");
-            st.execute("create table `diesAmbPes` ("
-                    + "dia varchar(10), "
-                    + "pes int"
-                    + ");");
-            st.execute("insert into diesAmbPes values "
-                    + "('Lunes', 1), "
-                    + "('Martes', 2), "
-                    + "('Miercoles', 3), "
-                    + "('Jueves', 4), "
-                    + "('Viernes', 5), "
-                    + "('Sabado', 6), "
-                    + "('Domingo', 7)"
-                    + ";");
-        } catch (Exception ex) {
-        } finally {
-            con.close();
-        }
-    }
-
-    public boolean createMesssage(String transmitter, String addressee, String message) {
-
-        DBConnection con = new DBConnection();
-
-        try {
-            con.open();
-            Statement st = con.getConection().createStatement();
-            st.execute("insert into users values ('"
-                    + "uuid(),'"
-                    + transmitter + "','"
-                    + addressee + "','"
-                    + message + "',"
-                    + "unix_timestamp(),");
-            return true;
-        } catch (Exception ex) {
-        } finally {
-            con.close();
-        }
-        return false;
-    }
-
-    public Missatge[] getMesssage(String addressee) {
-
-        DBConnection con = new DBConnection();
-        ArrayList<Missatge> msAL=new ArrayList<>();
-        Missatge arrayMissatges[];
-        Missatge ms= new Missatge();
-//        String name_emisor;
-//        String message;
-//        long u_time;
-        
-        try {
-            con.open();
-            Statement st = con.getConection().createStatement();
-            ResultSet rs = st.executeQuery("SELECT name_emisor, message, u_time FROM messages WHERE name_receptor= '" + addressee + "' ORDER BY u_time DESC;");
-
-            while (rs.next()) {   
-            ms=new Missatge(rs.getString("message"),rs.getString("name_emisor"), rs.getLong("u_time"));
-            msAL.add(ms);
+            URL sql = new URL("http://127.0.0.1:8080/ADI/inc/install.sql");
+            BufferedReader buff = new BufferedReader(new InputStreamReader(sql.openStream()));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while ((line = buff.readLine()) != null) {
+                sb.append(line);
             }
+            buff.close();
+            String[] sqlInst = sb.toString().split(";");
             
-            arrayMissatges=(Missatge[])msAL.toArray();            
-            
-            return arrayMissatges;
-        } catch (Exception ex) {
+            Statement st = con.getConection().createStatement();
+            for (String inst : sqlInst) {
+                if (!inst.trim().equals("")) {
+                    st.executeUpdate(inst);
+                }
+            }
+
+        
+        } catch (IOException | SQLException ex) {
+            ex.printStackTrace();
         } finally {
             con.close();
         }
-        return null;
     }
 
     public boolean createUser(String userName, String password) {

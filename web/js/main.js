@@ -3,7 +3,7 @@ $(document).ready(function () {
     $('.content').addClass('content-loading');
 
     $.ajax({
-        url: "api/illes",
+        url: "api/data/illes",
         type: 'GET',
         success: function (resp, status) {
             var obj = eval("(" + resp + ")");
@@ -111,7 +111,7 @@ $(document).ready(function () {
             var color = getRandomColor();
 
             $.ajax({
-                url: "api/municipioByDays?" + query,
+                url: "api/data/municipioByDays?" + query,
                 type: 'GET',
                 success: function (resp, status) {
                     var obj = eval("(" + resp + ")");
@@ -140,7 +140,7 @@ $(document).ready(function () {
 
 
             $.ajax({
-                url: "api/municipioByTime?" + query,
+                url: "api/data/municipioByTime?" + query,
                 type: 'GET',
                 success: function (resp, status) {
                     var obj = eval("(" + resp + ")");

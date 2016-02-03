@@ -11,7 +11,8 @@ public class API extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new java.util.HashSet<>();
         
-        resources.add(APIActions.class);
+        resources.add(APIData.class);
+        resources.add(APIChat.class);
         
         return resources;
     }

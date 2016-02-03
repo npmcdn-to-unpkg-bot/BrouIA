@@ -14,6 +14,7 @@ create table messages
     user_to varchar(100),
     user_from varchar(100),
     message varchar(10000),
+    is_readed boolean,
     creation_time int(10),
     primary key(user_to, user_from, creation_time),
     foreign key(user_to) references users(user_name),

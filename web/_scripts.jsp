@@ -3,4 +3,4 @@
 <script src="js/mlMenu.js"></script>
 <script src="js-charts/highcharts.js"></script>
 <script src="js-charts/modules/exporting.js"></script>
-<script src="js/main.js"></script>
+

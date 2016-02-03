@@ -113,25 +113,24 @@ public class DBActions {
     }
 
     public boolean logInUser(String userName, String password) {
-        long unixTime = System.currentTimeMillis() / 1000L;
-
         DBConnection con = new DBConnection();
 
         try {
             con.open();
             Statement st = con.getConection().createStatement();
-            String query = "select count(*) as count form users where "
-                    + "name = " + userName + " and "
-                    + "hashed_pass = sha2(concat(u_time, '" + password + "'), 512);";
-            ResultSet rs = st.executeQuery("insert into users values ('"
-                    + userName + "',"
-                    + unixTime + ","
-                    + "sha2(concat('" + unixTime + "', '" + password + "'), 512))");
+            String query = "select count(*) as count from users "
+                    + "where user_name = '" + userName + "' "
+                    + "and hashed_pass = "
+                    + "sha2(concat(creation_time, '" + password + "'), 512) "
+                    + "collate 'latin1_spanish_ci';";
+            ResultSet rs = st.executeQuery(query);
 
             if (rs.next()) {
-                return 1 == rs.getInt("count");
+                int total = rs.getInt("count");
+                return 1 == total;
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
         } finally {
             con.close();
         }

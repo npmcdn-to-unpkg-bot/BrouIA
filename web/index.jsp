@@ -13,5 +13,5 @@
 
 </div><!-- /Container -->
 <%@include file="_scripts.jsp" %> 
-
+<script src="js/main.js"></script>
 <%@include file="_footer.jsp" %> 

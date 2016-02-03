@@ -3,26 +3,31 @@
 
     'use strict';
 
-    var support = {animations: Modernizr.cssanimations},
-    animEndEventNames = {'WebkitAnimation': 'webkitAnimationEnd', 'OAnimation': 'oAnimationEnd', 'msAnimation': 'MSAnimationEnd', 'animation': 'animationend'},
-    animEndEventName = animEndEventNames[ Modernizr.prefixed('animation') ],
-            onEndAnimation = function (el, callback) {
-                var onEndCallbackFn = function (ev) {
-                    if (support.animations) {
-                        if (ev.target != this)
-                            return;
-                        this.removeEventListener(animEndEventName, onEndCallbackFn);
-                    }
-                    if (callback && typeof callback === 'function') {
-                        callback.call();
-                    }
-                };
-                if (support.animations) {
-                    el.addEventListener(animEndEventName, onEndCallbackFn);
-                } else {
-                    onEndCallbackFn();
-                }
-            };
+    var support = {animations: Modernizr.cssanimations};
+    var animEndEventNames = {
+        'WebkitAnimation': 'webkitAnimationEnd',
+        'OAnimation': 'oAnimationEnd',
+        'msAnimation': 'MSAnimationEnd',
+        'animation': 'animationend'
+    };
+    var animEndEventName = animEndEventNames[Modernizr.prefixed('animation')];
+    var onEndAnimation = function (el, callback) {
+        var onEndCallbackFn = function (ev) {
+            if (support.animations) {
+                if (ev.target != this)
+                    return;
+                this.removeEventListener(animEndEventName, onEndCallbackFn);
+            }
+            if (callback && typeof callback === 'function') {
+                callback.call();
+            }
+        };
+        if (support.animations) {
+            el.addEventListener(animEndEventName, onEndCallbackFn);
+        } else {
+            onEndCallbackFn();
+        }
+    };
 
     function extend(a, b) {
         for (var key in b) {

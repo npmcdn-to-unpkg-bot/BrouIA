@@ -1,7 +1,7 @@
 <%@include file="_header.jsp" %>  
 <%@include file="_nav.jsp" %>  
 
-<%    String nombre = request.getParameter("nombre");
+<%  String nombre = request.getParameter("nombre");
     String password = request.getParameter("pass1");
     String password2 = request.getParameter("pass2");
 

@@ -14,6 +14,14 @@ public class ChatMessage {
         isRead = false;
         time = System.currentTimeMillis() / 1000L;
     }
+    
+    public ChatMessage(String to, String from, String message, boolean isReaded, long time) {
+        this.message = message;
+        this.from = from;
+        this.to = to;
+        this.isRead = isReaded;
+        this.time = time;
+    }
 
     public String getMessage() {
         return message;
@@ -38,9 +46,14 @@ public class ChatMessage {
     public void ReadMessage() {
         isRead = true;
     }
-    
+
     @Override
     public String toString() {
-        return "from: " + from + " to: " + to + " msg: " + message;
+        return "{\"message\":\"" + message + "\","
+                + "\"from\":\"" + from + "\","
+                + "\"to\":\"" + to + "\","
+                + "\"isRead\":" + isRead + ","
+                + "\"time\":" + time + '}';
     }
+    
 }

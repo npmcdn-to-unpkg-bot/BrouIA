@@ -9,7 +9,6 @@ body {
     overflow: hidden;
     margin: 0;
     color: #cecece;
-    background: #2a2b30;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -36,6 +35,23 @@ a:hover {
 .content-loading .info {
     display: none;
 }
+.tab {
+    visibility: collapse;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.tab-visible {
+    visibility: visible;
+}
+.chart-grid {
+    margin: 0 auto;
+}
+.chart {
+    width: 400px;
+    height: 400px;
+    max-width: 100%;
+}
 .info {
     font-size: 1.1em;
     font-weight: bold;
@@ -52,7 +68,6 @@ a:hover {
     padding: 1em 0 0 0;
     text-align: center;
     color: #3b3d4a;
-    background: #1c1d22;
 }
 .logo-text {
     font-size: 0.75em;
@@ -78,7 +93,8 @@ a:hover {
     left: 0;
     width: 300px;
     height: calc(100vh - 120px);
-    background: #1c1d22;
+    border-right: 1px solid #f1f1f1;
+    background: #fff;
 }
 .menu_wrap {
     position: absolute;
@@ -314,7 +330,6 @@ a:hover {
     top: 1em;
     left: 1em;
     display: none;
-    color: #fff;
     position: fixed;
     z-index: 1000;
 }
@@ -323,7 +338,6 @@ a:hover {
     top: 1.25em;
     right: 1em;
     display: none;
-    color: #45464e;
 }
 
 

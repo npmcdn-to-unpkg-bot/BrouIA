@@ -1,6 +1,8 @@
-package database;
+package RESTFull.endpoints;
 
 import Models.ChatMessage;
+import RESTFull.Authorize;
+import database.DBConnection;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,30 +17,33 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 
+@Authorize
 @Path("/chat")
-public class APIChat {
+public class ChatEndpoint {
 
     private final static List<ChatMessage> CHAT
             = Collections.synchronizedList(new ArrayList<ChatMessage>());
 
     @GET
-    @Path("/read/{myself}")
-    public Response getMyself(@PathParam("myself") String name) {
+    @Path("/read")
+    public Response getMyself(@Context SecurityContext securityContext) {
+        String myself = securityContext.getUserPrincipal().getName();
 
         StreamingOutput stream = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 Writer writer = new BufferedWriter(new OutputStreamWriter(output));
-                
+
                 long currentTime = System.currentTimeMillis() / 1000L;
                 for (ChatMessage msg : CHAT) {
-                    if (!msg.isRead() && msg.getFrom().equals(name) && msg.getTime() >= currentTime) {
+                    if (!msg.isRead() && msg.getFrom().equals(myself) && msg.getTime() >= currentTime) {
                         writer.write(msg.toString() + "\n");
                         msg.ReadMessage();
                     }
@@ -49,14 +54,17 @@ public class APIChat {
 
         return Response.ok(stream).build();
     }
-    
+
     @GET
     @Path("/past")
-    public String getPast(@QueryParam("myself") String myself, @QueryParam("friend") String friend) {
-        ArrayList<ChatMessage> messages = (ArrayList<ChatMessage>)getMessagesFromUserDB(myself, friend);
+    public String getPast(@QueryParam("friend") String friend,
+            @Context SecurityContext securityContext) {
+        String myself = securityContext.getUserPrincipal().getName();
+
+        ArrayList<ChatMessage> messages = (ArrayList<ChatMessage>) getMessagesFromUserDB(myself, friend);
         StringBuilder sb = new StringBuilder();
         sb.append("{\"messages\": [ ");
-        for(ChatMessage cm : messages) {
+        for (ChatMessage cm : messages) {
             sb.append(cm).append(",");
         }
         sb.append("]}");
@@ -65,9 +73,9 @@ public class APIChat {
 
     @GET
     @Path("/users")
-    public String getUsers() {
+    public Response getUsers(@Context SecurityContext securityContext) {
         DBConnection con = new DBConnection();
-
+        String myself = securityContext.getUserPrincipal().getName();
         ArrayList<String> users = new ArrayList();
 
         try {
@@ -77,14 +85,17 @@ public class APIChat {
             ResultSet rs = st.executeQuery(query);
 
             while (rs.next()) {
-                users.add(rs.getString("name"));
+                String name = rs.getString("name");
+                if (!name.equals(myself)) {
+                    users.add(rs.getString("name"));
+                }
             }
 
         } catch (Exception ex) {
         } finally {
             con.close();
         }
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("{\"users\": [");
         for (String name : users) {
@@ -94,14 +105,17 @@ public class APIChat {
         }
         sb.append("]}");
 
-        return sb.toString();
+        return Response.ok(sb.toString()).build();
     }
 
     @POST
     @Path("/send")
-    public Response send(@HeaderParam("from") String from,
-            @HeaderParam("to") String to, @HeaderParam("msg") String msg) {
-        final ChatMessage cm = new ChatMessage(to, from, msg);
+    public Response send(@HeaderParam("to") String to, 
+            @HeaderParam("msg") String msg, @Context SecurityContext securityContext) {
+        
+        String myself = securityContext.getUserPrincipal().getName();
+        
+        final ChatMessage cm = new ChatMessage(to, myself, msg);
         synchronized (CHAT) {
             CHAT.add(cm);
         }
@@ -124,7 +138,6 @@ public class APIChat {
             st.execute(query);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
         } finally {
             con.close();
         }
@@ -152,11 +165,12 @@ public class APIChat {
                 boolean isRead = rs.getBoolean("is_readed");
                 list.add(new ChatMessage(to, from, message, isRead, time));
             }
-            
+
         } catch (Exception ex) {
         } finally {
             con.close();
         }
         return list;
     }
+
 }

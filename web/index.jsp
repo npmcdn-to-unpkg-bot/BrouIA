@@ -133,7 +133,8 @@
                     }
                 });
             }
-
+        
+            var audio = new Audio('inc/ding.mp3');
             var polling = false;
             function startPoll(user, token) {
                 polling = true;
@@ -153,6 +154,7 @@
                                     console.log(i + ".- " + msg);
                                     var obj = eval("(" + msg + ")");
                                     appendMessage("friend", obj.message);
+                                    audio.play();
                                 }
                             }
                             $('.chat-messages').animate({scrollTop: $('.chat-messages-list').height()}, "slow");

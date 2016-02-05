@@ -273,6 +273,8 @@
                                 $('.tab').toggleClass('tab-visible');
                             }
                             if (friend !== itemName) {
+                                $('.user-' + friend).removeClass('unread');
+                                //$('.user-' + friend).html(friend);
                                 cleanChat();
                                 friend = itemName;
                                 polling = false;
@@ -376,6 +378,24 @@
 
                             }
                         }).then(function () {
+
+                            $.ajax({
+                                url: 'api/chat/unreads',
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer ' + token
+                                },
+                                success: function(resp) {
+                                    if (resp !== '') {
+                                        var obj = eval("(" + resp + ")");
+                                        $.each(obj.unreads, function(i, val) {
+                                            $('.user-' + val.name).addClass('unread');
+                                            //$('.user-' + val.name).html(val.name + " " + val.total);
+                                        });
+                                    }
+                                }
+                            });
+
                             var mlMenu = new MLMenu(document.getElementById('menu'), {
                                 breadcrumbsCtrl: true, // show breadcrumbs
                                 initialBreadcrumb: 'all', // initial breadcrumb text
@@ -389,7 +409,7 @@
                                 if (msg === '') {
                                     return false;
                                 }
-                                
+
                                 $('#chat-message').val("");
                                 appendMessage('myself', msg);
 

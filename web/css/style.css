@@ -350,6 +350,9 @@ header, footer {
     right: 1em;
     display: none;
 }
+.unread {
+    color: #36CE78;
+}
 
 
 

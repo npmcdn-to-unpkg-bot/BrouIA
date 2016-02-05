@@ -110,6 +110,38 @@ public class ChatEndpoint {
         return Response.ok(sb.toString()).build();
     }
 
+    @GET
+    @Path("/unreads")
+    public Response getUnreads(@Context SecurityContext securityContext) {
+        DBConnection con = new DBConnection();
+        String myself = securityContext.getUserPrincipal().getName();
+        
+        StringBuilder jsonUnrd = new StringBuilder();
+        try {
+            con.open();
+            Statement st = con.getConection().createStatement();
+            String query = "select user_from, count(*) as total "
+                    + "from messages  where user_to = '" + myself + "' "
+                    + "and is_readed = false group by user_from;";
+            ResultSet rs = st.executeQuery(query);
+            jsonUnrd.append("{\"unreads\": [");
+            while (rs.next()) {
+                jsonUnrd.append("{\"name\":\"")
+                        .append(rs.getString("user_from"))
+                        .append("\", \"total\":")
+                        .append(rs.getInt("total"))
+                        .append("},");
+            }
+            jsonUnrd.append("]}");
+            
+        } catch (Exception ex) {
+        } finally {
+            con.close();
+        }
+
+        return Response.ok(jsonUnrd.toString()).build();
+    }
+
     @POST
     @Path("/send")
     public Response send(@HeaderParam("to") String to, 

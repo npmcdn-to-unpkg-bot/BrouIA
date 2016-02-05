@@ -96,13 +96,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         try {
             con.open();
             Statement st = con.getConection().createStatement();
-            String query = "select user_name count from users "
+            String query = "select user_name from users "
                     + "where hashed_pass = '" + token + "';";
             ResultSet rs = st.executeQuery(query);
             if (rs.next()) {
-                return rs.getString("user_name");
+                String name = rs.getString("user_name");
+                return name;
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
         } finally {
             con.close();
         }

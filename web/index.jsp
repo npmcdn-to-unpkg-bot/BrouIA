@@ -5,9 +5,11 @@
 <%
     DBActions actions = new DBActions();
     if (actions.installIsNeed()) {
-
         response.setStatus(response.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", request.getContextPath() + "/install.jsp");
+    }
+    if (request.getParameter("auth-token") != null) {
+        session.setAttribute("token", request.getParameter("auth-token"));
     }
 %>
 
@@ -33,6 +35,21 @@
                         <h1 class="logo-text">LOGO img</h1>
                     </div>
                     <h2 class="logo-text">ADI</h2>
+                </div>
+
+                <div class="user-opts">
+                    <% if (session.getAttribute("token") == null) { %>
+
+                    <!-- no ususri logeat -->
+                    <a href="signin.jsp">Entrar</a>
+                    <a href="register.jsp">Registrar-se</a>
+
+                    <% } else { %>
+
+                    <!-- amb usuari logeat -->
+                    <a id="hi" href="manage.jsp">Hola </a>
+
+                    <% } %>
                 </div>
             </header>
 
@@ -74,8 +91,8 @@
         <script src="https://npmcdn.com/masonry-layout@4.0.0/dist/masonry.pkgd.min.js"></script>
         <script src="js/classie.js"></script>
         <script src="js/mlMenu.js"></script>
-        <script src="js-charts/highcharts.js"></script>
-        <script src="js-charts/modules/exporting.js"></script>
+        <script src="js/js-charts/highcharts.js"></script>
+        <script src="js/js-charts/modules/exporting.js"></script>
         <!--<script src="js/main.js"></script>-->
 
         <script>
@@ -129,11 +146,29 @@
             }
 
             $(document).ready(function () {
-                var token = '311eee4f67111a1d6375a9451297790ce177817d5e7c84c012aa6429f0af7db31fca340eae8c05c947aba53be5e5ea25563bfc1e63f20043cbc38fe4d67cb972';
+                var token = '<% if (session.getAttribute("token") != null) {
+                        out.print(session.getAttribute("token"));
+                    }%>';
 
                 $('.content').addClass('content-loading');
                 $("#menus ul.main-menu_level").append("<li class='menu_item'><a data-submenu='submenu-islas' class='menu_link' href='#'>Islas</a></li>");
-                $("#menus ul.main-menu_level").append("<li class='menu_item'><a data-submenu='submenu-chats' class='menu_link' href='#'>Chats</a></li>");
+
+                if (token === '') {
+                    $("#menus ul.main-menu_level").append("<li class='menu_item'><a class='menu_link' href='signin.jsp'>Chats</a></li>");
+                } else {
+                    $("#menus ul.main-menu_level").append("<li class='menu_item'><a data-submenu='submenu-chats' class='menu_link' href='#'>Chats</a></li>");
+                    $.ajax({
+                        url: 'api/auth/info',
+                        type: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        },
+                        success: function (data) {
+                            var obj = eval("(" + data + ")");
+                            $('#hi').append(obj.name);
+                        }
+                    });
+                }
 
                 $.ajax({
                     url: "api/data/illes",
@@ -216,7 +251,7 @@
                             if (!$('.chat-window').hasClass('tab-visible')) {
                                 $('.tab').toggleClass('tab-visible');
                             }
-                            
+
                             friend = itemName;
                             polling = false;
                             getPast(friend);

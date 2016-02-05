@@ -77,7 +77,7 @@
                     </div>
                     <div class="chat-input-bar">
                         <form id="chat-form">
-                            <input type="text" id="chat-message"/>
+                            <input placeholder="Escriu alguna cosa" type="text" id="chat-message"/>
                             <input type="submit" value="send"/>
                         </form>
                     </div>
@@ -88,19 +88,32 @@
         </div>
 
         <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+        <script>
+            if (typeof jQuery === 'undefined') {
+                document.write(unescape("%3Cscript src='/ADI/js/jquery-2.2.0.min.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+        </script>
         <script src="https://npmcdn.com/masonry-layout@4.0.0/dist/masonry.pkgd.min.js"></script>
+        <script>
+            if (typeof Masonry === 'undefined') {
+                document.write(unescape("%3Cscript src='/ADI/js/masonry.min.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+        </script>
         <script src="js/classie.js"></script>
         <script src="js/mlMenu.js"></script>
         <script src="js/js-charts/highcharts.js"></script>
         <script src="js/js-charts/modules/exporting.js"></script>
-        <!--<script src="js/main.js"></script>-->
 
         <script>
             function appendMessage(cls, msg) {
                 $('.chat-messages-list').append('<li class="chat-message chat-message-' + cls + '"><div class="chat-message-bubble">' + msg + '</div></li>');
             }
 
-            function getPast(friend, token) {
+            function cleanChat() {
+                $('.chat-messages-list li').remove()
+            }
+
+            function getPast(myself, friend, token) {
                 $.ajax({
                     url: 'api/chat/past?friend=' + friend,
                     method: 'GET',
@@ -116,6 +129,7 @@
                             }
                             appendMessage(cls, val.message);
                         });
+                        $('.chat-messages').animate({scrollTop: $('.chat-messages-list').height()}, "slow");
                     }
                 });
             }
@@ -130,13 +144,18 @@
                         'Authorization': 'Bearer ' + token
                     },
                     success: function (data) {
-                        if (data != "") {
+                        if (data !== "") {
+
                             var msgs = data.split("\n");
                             for (i = 0; i < msgs.length; i++) {
-                                var obj = JSON.parse(msgs[i]);
-                                appendMessage("friend", obj.message);
-                                show(obj.from, obj.message);
+                                var msg = $.trim(msgs[i]);
+                                if (msg !== '') {
+                                    console.log(i + ".- " + msg);
+                                    var obj = eval("(" + msg + ")");
+                                    appendMessage("friend", obj.message);
+                                }
                             }
+                            $('.chat-messages').animate({scrollTop: $('.chat-messages-list').height()}, "slow");
                         }
                     }
                 }).always(function () {
@@ -149,6 +168,7 @@
                 var token = '<% if (session.getAttribute("token") != null) {
                         out.print(session.getAttribute("token"));
                     }%>';
+                var myself = '';
 
                 $('.content').addClass('content-loading');
                 $("#menus ul.main-menu_level").append("<li class='menu_item'><a data-submenu='submenu-islas' class='menu_link' href='#'>Islas</a></li>");
@@ -165,6 +185,7 @@
                         },
                         success: function (data) {
                             var obj = eval("(" + data + ")");
+                            myself = obj.name;
                             $('#hi').append(obj.name);
                         }
                     });
@@ -251,11 +272,14 @@
                             if (!$('.chat-window').hasClass('tab-visible')) {
                                 $('.tab').toggleClass('tab-visible');
                             }
+                            if (friend !== itemName) {
+                                cleanChat();
+                                friend = itemName;
+                                polling = false;
+                                getPast(myself, friend, token);
+                                startPoll(friend, token);
+                            }
 
-                            friend = itemName;
-                            polling = false;
-                            getPast(friend);
-                            stratPoll(friend);
                             closeMenu();
                         } else {
 
@@ -362,6 +386,10 @@
 
                             $('#chat-form').submit(function () {
                                 var msg = $('#chat-message').val();
+                                if (msg === '') {
+                                    return false;
+                                }
+                                
                                 $('#chat-message').val("");
                                 appendMessage('myself', msg);
 

@@ -17,6 +17,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -32,10 +33,8 @@ public class ChatEndpoint {
             = Collections.synchronizedList(new ArrayList<ChatMessage>());
 
     @GET
-    @Path("/read")
-    public Response getMyself(@Context SecurityContext securityContext) {
-        String myself = securityContext.getUserPrincipal().getName();
-
+    @Path("/read/{friend}")
+    public Response getMyself(@PathParam("friend") String friend) {
         StreamingOutput stream = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
@@ -43,21 +42,21 @@ public class ChatEndpoint {
 
                 long currentTime = System.currentTimeMillis() / 1000L;
                 for (ChatMessage msg : CHAT) {
-                    if (!msg.isRead() && msg.getFrom().equals(myself) && msg.getTime() >= currentTime) {
+                    if (!msg.isRead() && msg.getFrom().equals(friend) && msg.getTime() >= currentTime) {
                         writer.write(msg.toString() + "\n");
+                        markAsReadMessage(msg);
                         msg.ReadMessage();
                     }
                 }
                 writer.flush();
             }
         };
-
         return Response.ok(stream).build();
     }
 
     @GET
     @Path("/past")
-    public String getPast(@QueryParam("friend") String friend,
+    public Response getPast(@QueryParam("friend") String friend,
             @Context SecurityContext securityContext) {
         String myself = securityContext.getUserPrincipal().getName();
 
@@ -68,7 +67,10 @@ public class ChatEndpoint {
             sb.append(cm).append(",");
         }
         sb.append("]}");
-        return sb.toString();
+        
+        markAsReadAllMessages(myself, friend);
+        
+        return Response.ok(sb.toString()).build();
     }
 
     @GET
@@ -135,6 +137,44 @@ public class ChatEndpoint {
                     + "'" + cm.getMessage() + "', "
                     + cm.isRead() + ", "
                     + cm.getTime() + ");";
+            st.execute(query);
+
+        } catch (Exception ex) {
+        } finally {
+            con.close();
+        }
+    }
+    
+    private void markAsReadMessage(ChatMessage cm) {
+        DBConnection con = new DBConnection();
+
+        try {
+            con.open();
+            Statement st = con.getConection().createStatement();
+            String query = "update messages set is_readed = true "
+                    + "where "
+                    + "user_to = '" + cm.getTo() + "' and "
+                    + "user_from = '" + cm.getFrom()+ "' and "
+                    + "message = '" + cm.getMessage() + "' and "
+                    + "ceation_time = " + cm.getTime() + ";";
+            st.execute(query);
+
+        } catch (Exception ex) {
+        } finally {
+            con.close();
+        }
+    }
+    
+    private void markAsReadAllMessages(String myself, String friend) {
+        DBConnection con = new DBConnection();
+        
+        try {
+            con.open();
+            Statement st = con.getConection().createStatement();
+            String query = "update messages set is_readed = true "
+                    + "where "
+                    + "user_to = '" + myself + "' and "
+                    + "user_from = '" + friend+ "';";
             st.execute(query);
 
         } catch (Exception ex) {

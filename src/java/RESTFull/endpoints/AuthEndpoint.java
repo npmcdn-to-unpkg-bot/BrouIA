@@ -26,10 +26,10 @@ public class AuthEndpoint {
         json.append("{\"name\":\"")
                 .append(name)
                 .append("\"}");
-        
+
         return Response.ok(json.toString()).build();
     }
-    
+
     @POST
     @Path("/signin")
     public Response signinUser(@FormParam("username") String username,
@@ -67,16 +67,24 @@ public class AuthEndpoint {
     @PUT
     @Authorize
     @Path("/changepass")
-    public Response changeUserPass(@FormParam("username") String username,
-            @FormParam("password") String password, @Context UriInfo uriInfo) {
-        if (updateUser(username, password)) {
-            String token = issueToken(username);
-            String baseUrl = uriInfo.getBaseUri().toString();
-            baseUrl = baseUrl.substring(0, baseUrl.length() - 4); // menos "/api"
-            return Response
-                    .status(Response.Status.SEE_OTHER)
-                    .header("Location", baseUrl + "?auth-token=" + token)
-                    .build();
+    public Response changeUserPass(@FormParam("oldPass") String oldpass,
+            @FormParam("password") String password, @Context UriInfo uriInfo,
+            @Context SecurityContext securityContext) {
+
+        String username = securityContext.getUserPrincipal().getName();
+        if (authenticate(username, oldpass)) {
+            if (updateUser(username, password)) {
+                String token = issueToken(username);
+                String baseUrl = uriInfo.getBaseUri().toString();
+                baseUrl = baseUrl.substring(0, baseUrl.length() - 4); // menos "/api"
+                return Response
+                        .status(Response.Status.SEE_OTHER)
+                        .header("Location", baseUrl + "?auth-token=" + token)
+                        .build();
+            }
+        }
+        else {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
         return Response.status(Response.Status.BAD_REQUEST).build();

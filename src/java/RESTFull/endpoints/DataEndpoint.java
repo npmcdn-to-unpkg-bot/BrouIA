@@ -164,13 +164,13 @@ public class DataEndpoint {
         try {
             con.open();
             Statement st = con.getConection().createStatement();
-            String query = "select count(*) as total, pes as dia_num "
+            String query = "select count(*) as total, (pes - 1) as dia_num "
                     + "from diesambpes as dap "
                     + "left join sm_procesados as sp "
                     + "on sp.dia_sem = dap.dia "
-                    + "where municipio = 'Palma' and "
-                    + "isla = 'Mallorca' "
-                    + "group by dap.dia order by dap.pes;;";
+                    + "where municipio = '" + municipio + "' and "
+                    + "isla = '" + isla + "' "
+                    + "group by dap.dia order by dap.pes;";
             ResultSet rs = st.executeQuery(query);
             while (rs.next()) {
                 int[] dia = new int[2];

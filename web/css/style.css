@@ -52,6 +52,9 @@ a:hover {
     height: 400px;
     max-width: 100%;
 }
+.chart .highcharts-button {
+    display: none;
+}
 .info {
     font-size: 1.1em;
     font-weight: bold;

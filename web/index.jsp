@@ -93,7 +93,7 @@
                 document.write(unescape("%3Cscript src='/ADI/js/jquery-2.2.0.min.js' type='text/javascript'%3E%3C/script%3E"));
             }
         </script>
-        <script src="https://npmcdn.com/masonry-layout@4.0.0/dist/masonry.pkgd.min.js"></script>
+        <script src="https://unpkg.com/masonry-layout@4.0.0/dist/masonry.pkgd.min.js"></script>
         <script>
             if (typeof Masonry === 'undefined') {
                 document.write(unescape("%3Cscript src='/ADI/js/masonry.min.js' type='text/javascript'%3E%3C/script%3E"));
